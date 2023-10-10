@@ -1,11 +1,14 @@
-* link submission
+* link submission:
     As an end user,
     I need to be able to submit new links to invoker,
     so as to update the link graph and make their contents searchable
 
     acceptance criteria:
+
         - Api endpoint will provided for submission
+        
         - Submit link has criteria:
+
             1. must added to the graph
             2. must crawled by system and add to their index
         
@@ -66,7 +69,6 @@
 -.user-interface service that can store and retrieve the link from user
 
 
-structure directory
 
 Components:
 
@@ -81,6 +83,7 @@ Components:
 
 
 Domains:
+
     Role: 
         Domains, on the other hand, represent larger, cohesive areas of a software system. 
         They encapsulate related functionality and data that are grouped together due to their commonality.
