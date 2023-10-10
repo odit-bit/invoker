@@ -1,0 +1,1 @@
+`monolithic` apporach choose for the mvp , it will deploy as single app binary and the application launch as default configuration to crawling the link for every 1 minute and ranking the page for every 1 hour with single database for storing and indexing.
