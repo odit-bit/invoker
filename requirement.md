@@ -76,6 +76,8 @@ Components:
         -.crawl service that can crawl the link to find new following link        
     linkgraph:
         -.persistence of links and egde 
+    textIndex:
+        -.persistence of index
     pagerank:
         -. calculate ranking of link for indexing
     frontend:
