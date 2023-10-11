@@ -32,7 +32,7 @@ func Test_linkFetcher_error_httpResponse(t *testing.T) {
 	var inputURL = "http://example.com"
 	var privateNetwork = false
 	urlGetter.
-		EXPECT().Get(gomock.Any(), gomock.Eq(inputURL)).AnyTimes().
+		EXPECT().Get(gomock.Eq(inputURL)).AnyTimes().
 		Return(successHttpResponse(404, "html/utf-8", []byte("EXAMPLE CONTENT")))
 
 	pnd.
@@ -52,7 +52,7 @@ func Test_linkFetcher_error_httpResponse(t *testing.T) {
 	// non html header
 	inputURL = "https://www.nonHtml.com"
 	urlGetter.
-		EXPECT().Get(gomock.Any(), gomock.Eq(inputURL)).AnyTimes().
+		EXPECT().Get(gomock.Eq(inputURL)).AnyTimes().
 		Return(successHttpResponse(200, "Application/JSON", []byte(`{"EXAMPLE":"CONTENT}"`)))
 
 	p = &payload{URL: inputURL}
@@ -78,7 +78,7 @@ func Test_linkFetcher_exclusion_url(t *testing.T) {
 
 	var inputURL = "https://www.example.com/image.png"
 	urlGetter.
-		EXPECT().Get(gomock.Any(), gomock.Eq(inputURL)).AnyTimes().
+		EXPECT().Get(gomock.Eq(inputURL)).AnyTimes().
 		Return(successHttpResponse(200, "image/", []byte("EXAMPLE CONTENT")))
 
 	pnd.
@@ -106,8 +106,15 @@ func Test_linkFetcher(t *testing.T) {
 	urlGetter := mock_crawler.NewMockURLGetter(ctrl)
 	pnd := mock_crawler.NewMockPrivateNetworkDetector(ctrl)
 
-	urlGetter.EXPECT().Get(gomock.Any(), gomock.Any()).AnyTimes().
-		Return(successHttpResponse(200, "html/utf-8", []byte("EXAMPLE CONTENT")))
+	htmlContent := []byte(`
+		{
+			"name":"First",
+			"price":123415,
+			"tag":[tag1,tag2]
+		}
+	`)
+	urlGetter.EXPECT().Get(gomock.Any()).AnyTimes().
+		Return(successHttpResponse(200, "html/utf-8", htmlContent))
 
 	pnd.EXPECT().IsPrivate(gomock.Any()).AnyTimes().
 		Return(false, nil)
@@ -116,8 +123,9 @@ func Test_linkFetcher(t *testing.T) {
 	res, err := newLinkFetcher(urlGetter, pnd).Process(context.TODO(), p)
 
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
+
 	if !reflect.DeepEqual(res, p) {
 		t.Errorf("\n%v\n%v\n", res, p)
 	}

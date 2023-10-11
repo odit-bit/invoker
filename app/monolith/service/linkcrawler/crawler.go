@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/odit-bit/invoker/crawler"
 	"github.com/odit-bit/invoker/internal/metric"
 	"github.com/odit-bit/invoker/internal/privnet"
-	"github.com/odit-bit/invoker/internal/xhttpclient"
 	"github.com/odit-bit/invoker/linkgraph/graph"
 	"github.com/odit-bit/invoker/partition"
 	"github.com/odit-bit/invoker/textIndex/index"
@@ -114,7 +114,7 @@ func (cfg *Config) validate() error {
 }
 
 type Service struct {
-	cfg Config
+	cfg *Config
 
 	//crawler pipeline
 	crawler *crawler.Crawler
@@ -127,7 +127,7 @@ func New(graphDB GraphAPI, indexDB IndexAPI) *Service {
 		NumPartitions: 1,
 	}
 
-	urlGetter := xhttpclient.NewUrlGetterWithTimeout(2 * time.Second)
+	urlGetter := http.DefaultClient //xhttpclient.NewUrlGetterWithTimeout(2 * time.Second)
 
 	Logger := log.New(os.Stdout, "[crawler]", log.Ldate|log.Ltime)
 
@@ -146,7 +146,7 @@ func New(graphDB GraphAPI, indexDB IndexAPI) *Service {
 		Logger:            Logger,
 	}
 
-	crawlService, err := NewWithConfig(conf)
+	crawlService, err := NewWithConfig(&conf)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -154,7 +154,7 @@ func New(graphDB GraphAPI, indexDB IndexAPI) *Service {
 	return crawlService
 }
 
-func NewWithConfig(cfg Config) (*Service, error) {
+func NewWithConfig(cfg *Config) (*Service, error) {
 	if err := cfg.validate(); err != nil {
 		return nil, err
 	}

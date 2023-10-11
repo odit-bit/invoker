@@ -9,7 +9,6 @@
 package mock_crawler
 
 import (
-	context "context"
 	http "net/http"
 	reflect "reflect"
 
@@ -40,18 +39,18 @@ func (m *MockURLGetter) EXPECT() *MockURLGetterMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockURLGetter) Get(ctx context.Context, url string) (*http.Response, error) {
+func (m *MockURLGetter) Get(url string) (*http.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", ctx, url)
+	ret := m.ctrl.Call(m, "Get", url)
 	ret0, _ := ret[0].(*http.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockURLGetterMockRecorder) Get(ctx, url any) *gomock.Call {
+func (mr *MockURLGetterMockRecorder) Get(url any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockURLGetter)(nil).Get), ctx, url)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockURLGetter)(nil).Get), url)
 }
 
 // MockPrivateNetworkDetector is a mock of PrivateNetworkDetector interface.

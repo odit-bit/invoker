@@ -107,7 +107,6 @@ func main() {
 
 	//====================== Service
 	// pagerank instance
-	// pagerankService := pagerank.New(graphDB, indexDB)
 	part := partition.Fixed{
 		Partition:     0,
 		NumPartitions: 1,
@@ -123,8 +122,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// linkrawler instance
-	urlGetter := xhttpclient.NewUrlGetterWithTimeout(3 * time.Second)
+	urlGetter := xhttpclient.DefaultGetter
+	urlGetter.SetTimeout(5 * time.Second)
+	// urlGetter.WithNoRedirect()
+
 	detector, err := privnet.NewDetector()
 	if err != nil {
 		log.Fatal(err)
@@ -135,8 +136,9 @@ func main() {
 		Help: "total crawled link",
 	})
 
+	// linkrawler instance
 	// crawlService := linkcrawler.New(graphDB, indexDB)
-	crawlService, err := linkcrawler.NewWithConfig(linkcrawler.Config{
+	crawlService, err := linkcrawler.NewWithConfig(&linkcrawler.Config{
 		Graphdb:           graphDB,
 		Indexdb:           indexDB,
 		URLGetter:         urlGetter,

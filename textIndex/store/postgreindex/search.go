@@ -14,33 +14,32 @@ SELECT COUNT(*) FROM documents
 WHERE
 	CASE
 		WHEN length(trim($1)) = 0 THEN true
-		ELSE (to_tsvector('simple', title || ' ' || content) @@ plainto_tsquery('simple', $1))
+		ELSE ts @@ websearch_to_tsquery('english', $1)
 	END
 `
 
 // plainto_tsquery vs to_tsquery
-var searchDocQuery = fmt.Sprint(`
+var searchDocQuery = `
 SELECT linkID, url, title, content, indexed_at, pagerank
 FROM documents
 WHERE
 	CASE
 		WHEN length(trim($1)) = 0 THEN true
-		ELSE ts @@ plainto_tsquery('simple', $1)
+		ELSE ts @@ websearch_to_tsquery('english', $1)
 	END
 ORDER BY
+	pagerank DESC,
+
 	CASE
 		WHEN length(trim($1)) = 0 THEN NULL
-		ELSE ts_rank(ts, plainto_tsquery('simple', $1))
-	END DESC,
-
-	pagerank DESC
+	 	ELSE ts_rank(ts, websearch_to_tsquery('english', $1), 32)
+	END DESC	
 
 OFFSET ($2) ROWS
 FETCH FIRST ($3) ROWS ONLY;
-`)
+`
 
 // Search full-text index document.
-// todo:	implement match/match phrase text search
 func (i *indexdb) Search(query index.Query) (index.Iterator, error) {
 	//get the matchedCount document
 	var matchedCount int

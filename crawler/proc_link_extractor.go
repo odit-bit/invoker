@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"context"
+	"log"
 	"net/url"
 
 	"github.com/odit-bit/invoker/internal/pipeline"
@@ -32,11 +33,6 @@ func (le *linkExtractor) Process(ctx context.Context, p pipeline.Payload) (pipel
 	content := payload.RawContent.String()
 	baseMatch := baseHrefRegex.FindStringSubmatch(content)
 	if len(baseMatch) == 2 {
-		// if len(baseMatch[1]) == 0 {
-		// 	//DEBUG
-		// 	// fmt.Printf("link extractor error:\nbaseMatch: %v\n", baseMatch)
-		// }
-
 		base := resolveURL(relTo, trailingSlash(baseMatch[1]))
 		if base != nil {
 			relTo = base
@@ -71,6 +67,10 @@ func (le *linkExtractor) Process(ctx context.Context, p pipeline.Payload) (pipel
 		}
 	}
 
+	lenP := payload.RawContent.Len()
+	if lenP == 0 {
+		log.Printf("link extractor: len raw content is zero")
+	}
 	return payload, nil
 
 }

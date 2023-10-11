@@ -2,55 +2,47 @@ package xhttpclient
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"time"
 )
 
+var DefaultGetter = &UrlGetter{
+	cli:     &http.Client{},
+	timeout: 0,
+}
+
 type UrlGetter struct {
 	cli     *http.Client
-	Timeout time.Duration
+	timeout time.Duration
 }
 
-// will create default http client with default timeout
-func NewUrlGetter() *UrlGetter {
-
-	transport := &http.Transport{
-		// TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // Use this if you want to skip certificate verification
-	}
-
-	ug := UrlGetter{
-		cli:     &http.Client{Transport: transport},
-		Timeout: 30,
-	}
-	return &ug
+func (ug *UrlGetter) SetTimeout(ctxTimeout time.Duration) {
+	ug.cli.Timeout = ctxTimeout
 }
 
-// will create default http client with given timeout
-func NewUrlGetterWithTimeout(timeout time.Duration) *UrlGetter {
-
-	if timeout == 0 {
-		log.Fatal("timeout cannot 0")
+func (ug *UrlGetter) WithNoRedirect() {
+	ug.cli.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		return http.ErrUseLastResponse
 	}
-
-	transport := &http.Transport{
-		// TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // Use this if you want to skip certificate verification
-	}
-
-	ug := UrlGetter{
-		cli:     &http.Client{Transport: transport},
-		Timeout: timeout,
-	}
-	return &ug
 }
 
-func (ug *UrlGetter) Get(ctx context.Context, url string) (*http.Response, error) {
-	reqCtx, cancel := context.WithTimeout(ctx, ug.Timeout)
-	defer cancel()
-	req, err := http.NewRequestWithContext(reqCtx, "GET", url, nil)
+func (ug *UrlGetter) Get(url string) (*http.Response, error) {
+	ctx := context.TODO()
+	if ug.timeout > time.Second {
+		ctxTimeout, cancel := context.WithTimeout(context.Background(), ug.timeout)
+		ctx = ctxTimeout
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
-	res, err := ug.cli.Do(req)
-	return res, err
+
+	resp, err := ug.cli.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }

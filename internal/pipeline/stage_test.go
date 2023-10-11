@@ -166,16 +166,20 @@ func Test_return_error(t *testing.T) {
 	}()
 
 	input <- &payload
+
 	actual := actual{}
 
 	select {
 	case actual.value = <-output:
 	case actual.err = <-errCh:
 	case <-time.After(2 * time.Second):
-		t.Error("chan is blocking")
+		t.Fatalf("chan is blocking")
 	}
 
-	assert(t, &expect, &actual)
+	if actual.err != expect.err {
+		t.Fatal("expecting error ")
+	}
+	// assert(t, &expect, &actual)
 	close(output)
 	close(input)
 	close(errCh)
@@ -238,14 +242,14 @@ type actual struct {
 
 func assert(t *testing.T, expect *expect, actual *actual) {
 	if actual.err.Error() != expect.err.Error() {
-		t.Errorf("\nactual: %v\nexpect: %v\n", actual.err, expect.err)
+		t.Fatalf("\nactual: %v\nexpect: %v\n", actual.err, expect.err)
 	}
 	if actual.value != expect.value {
 		p1 := actual.value.(*stubPayload)
 		p2 := expect.value.(*stubPayload)
 
 		if p1.value != p2.value {
-			t.Errorf("\nactual: %v\nexpect: %v\n", p1.value, p2.value)
+			t.Fatalf("\nactual: %v\nexpect: %v\n", p1.value, p2.value)
 		}
 		// t.Errorf("\nactual: %v\nexpect: %v\n", actual.value, expect.value)
 	}

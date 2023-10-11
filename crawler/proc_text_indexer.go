@@ -3,6 +3,7 @@ package crawler
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/odit-bit/invoker/internal/pipeline"
@@ -31,6 +32,10 @@ func (ti *textIndexer) Process(ctx context.Context, p pipeline.Payload) (pipelin
 	if !ok {
 		return nil, fmt.Errorf("graph updater not craweler's payload: %t ", p)
 	}
+	if payload.Title == "" || payload.TextContent == "" {
+		log.Println("title or content is nil, it will error on postgreindex, url:", payload.URL)
+	}
+
 	doc := index.Document{
 		LinkID:    payload.LinkID,
 		URL:       payload.URL,

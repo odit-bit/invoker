@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -12,7 +13,7 @@ import (
 )
 
 type URLGetter interface {
-	Get(ctx context.Context, url string) (*http.Response, error)
+	Get(url string) (*http.Response, error)
 }
 
 type PrivateNetworkDetector interface {
@@ -46,7 +47,7 @@ func (lf *linkFetcher) Process(ctx context.Context, p pipeline.Payload) (pipelin
 	pURL := payload.URL
 	// Skip URLs that point to files that cannot contain html content.
 	if exclusionRegex.MatchString(pURL) {
-		// log.Println("err parse url:", pURL)
+		log.Printf("link fetcher url: %v\nerror: %v \n", pURL, "not containt html content")
 		return nil, nil
 	}
 
@@ -54,13 +55,13 @@ func (lf *linkFetcher) Process(ctx context.Context, p pipeline.Payload) (pipelin
 	// This is a security risk!
 	private, err := lf.isPrivate(pURL)
 	if private || err != nil {
-		// log.Println("err private network:", private)
+		log.Printf("link fetcher error: %v url: %v\n", err, pURL)
 		return nil, nil
 	}
 
 	//get url within timeout otherwise skipped
 	if err := contentFromURL(ctx, lf.urlGetter, payload); err != nil {
-		// log.Println(err)
+		log.Printf("link fetcher error: %v url: %v\n", err, pURL)
 		return nil, nil
 	}
 
@@ -81,26 +82,31 @@ func (lf *linkFetcher) isPrivate(urlString string) (bool, error) {
 func contentFromURL(ctx context.Context, getter URLGetter, payload *payload) error {
 	// url Getter
 	// held crawl link in expensive connection
-	res, err := getter.Get(ctx, payload.URL)
+	res, err := getter.Get(payload.URL)
 	if err != nil {
-		return fmt.Errorf("link fetcher: %v", err)
+		return fmt.Errorf("http request: %v", err)
 	}
 
 	// http.Response should not nil, skipped not success code
 	if res == nil || res.StatusCode < 200 || res.StatusCode > 299 {
-		return fmt.Errorf("link fetcher: status nok ok (200)")
+		return fmt.Errorf("http response status nok ok (%v)", res.StatusCode)
 	}
 
 	contentType := res.Header.Get("Content-Type")
 	if !strings.Contains(contentType, "html") {
-		return fmt.Errorf("link fetcher: non html content-type:%v", contentType)
+		return fmt.Errorf("http response: non html content-type:%v", contentType)
 	}
 
 	_, err = io.Copy(&payload.RawContent, res.Body)
-	_ = res.Body.Close()
 	if err != nil {
-		return fmt.Errorf("link fetcher: %v", err)
+		return fmt.Errorf("copy response body: %v", err)
 	}
 
+	err = res.Body.Close()
+	if err != nil {
+		return fmt.Errorf("close response body: %v", err)
+	}
+
+	// log.Println("link fetcher content type", contentType, "url:", payload.URL)
 	return nil
 }

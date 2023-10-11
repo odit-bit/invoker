@@ -3,6 +3,7 @@ package postgreindex
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/odit-bit/invoker/textIndex/index"
@@ -29,7 +30,11 @@ func (i *indexdb) Index(doc *index.Document) error {
 	doc.IndexedAt = doc.IndexedAt.UTC()
 	_, err := i.db.ExecContext(context.TODO(), insertDocumentQuery, doc.LinkID, doc.URL, doc.Title, doc.Content, doc.IndexedAt, doc.PageRank)
 	if err != nil {
-		return fmt.Errorf("indexer insert document error: %v, doc detail: %v", err, doc)
+		log.Printf("indexer index error: title: %v \n", doc.Title)
+		log.Printf("indexer index error: content: %v \n", doc.Content)
+		log.Printf("indexer index error: content: %v \n", doc.IndexedAt)
+
+		return fmt.Errorf("indexer insert document error: %v, doc detail: %v", err, doc.URL)
 	}
 	return nil
 }

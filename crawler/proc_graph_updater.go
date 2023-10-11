@@ -72,7 +72,7 @@ func (u *updater) Process(ctx context.Context, p pipeline.Payload) (pipeline.Pay
 		}
 
 	}
-	
+
 	removeEdgeBefore := time.Now()
 	err = u.graphUpdater.RemoveStaleEdges(linkSrc.ID, removeEdgeBefore)
 	if err != nil {

@@ -48,7 +48,10 @@ func (p *payload) Clone() pipeline.Payload {
 	cloneP.Title = p.Title
 	cloneP.TextContent = p.TextContent
 
-	io.Copy(&cloneP.RawContent, &p.RawContent)
+	_, err := io.Copy(&cloneP.RawContent, &p.RawContent)
+	if err != nil {
+		panic(fmt.Sprintf("[BUG] error cloning payload raw content: %v", err))
+	}
 	return cloneP
 }
 

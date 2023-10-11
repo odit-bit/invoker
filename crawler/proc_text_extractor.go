@@ -1,19 +1,23 @@
 package crawler
 
 import (
+	"bytes"
 	"context"
-	"html"
-	"io"
+	"fmt"
 	"regexp"
 	"strings"
 	"sync"
+	"unicode/utf8"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/odit-bit/invoker/internal/pipeline"
 )
 
 var (
-	titleRegex         = regexp.MustCompile(`(?i)<title.*?>(.*?)</title>`)
+	// it only matches in line content of <title>content</title>
+	// titleRegex = regexp.MustCompile(`(?i)<title.*?>(.*?)</title>`)
+
+	titleRegex         = regexp.MustCompile(`(?is)<title.*?>(.*?)</title>`)
 	repeatedSpaceRegex = regexp.MustCompile(`\s+`)
 )
 
@@ -36,72 +40,62 @@ func newTextExtractor() *textExtractor {
 
 // Process implements pipeline.Processor.
 func (te *textExtractor) Process(ctx context.Context, p pipeline.Payload) (pipeline.Payload, error) {
-	payload, ok := p.(*payload)
-	if !ok {
-		// log.Println("proc text extractor:", payload)
-		// return nil, fmt.Errorf("text extractor :not crawler payload")
+	payload := p.(*payload)
+	lenP := payload.RawContent.Len()
+	if lenP == 0 {
+		return nil, fmt.Errorf("text extractor: length raw content is zero")
+	}
+	sanitizer := te.policyPool.Get().(*bluemonday.Policy)
+	defer te.policyPool.Put(sanitizer)
+	// sanitizer.AllowElements("title")
+	// sanitizer.AllowElements("body")
+
+	payload.Title, payload.TextContent = sanitizeString(sanitizer, &payload.RawContent)
+	if payload.Title == "" && payload.TextContent == "" {
 		return nil, nil
 	}
 
-	sanitizer := te.policyPool.Get().(*bluemonday.Policy)
-
-	titleMatch := titleRegex.FindStringSubmatch(payload.RawContent.String())
-	if len(titleMatch) == 2 {
-		payload.Title = sanitizeTitle(sanitizer, titleMatch[1])
-	}
-
-	payload.TextContent = sanitizeContent(sanitizer, &payload.RawContent)
-
-	te.policyPool.Put(sanitizer)
 	return payload, nil
 }
 
 // helper
 
-// sanit
-func sanitizeTitle(sanitizer *bluemonday.Policy, titleMatch string) string {
-
-	// sanitize the rawContent (html)
-	t := sanitizer.Sanitize(titleMatch)
-
-	// replace repeated space
-	t2 := repeatedSpaceRegex.ReplaceAllString(t, " ")
-
-	//replace non-utf8
-
-	//
-	t3 := html.UnescapeString(t2)
-	t4 := strings.TrimSpace(t3)
-	t5 := cleanText(t4)
-	return t5
-}
-
-func sanitizeContent(sanitizer *bluemonday.Policy, r io.Reader) string {
-
-	// sanitize the rawContent (html)
-	t := sanitizer.SanitizeReader(r).String()
-
-	// replace repeated space
-	t2 := repeatedSpaceRegex.ReplaceAllString(t, " ")
-
-	//
-	t3 := html.UnescapeString(t2)
-
-	t4 := cleanText(t3)
-
-	t5 := strings.TrimSpace(t4)
-
-	return t5
-}
-
-func cleanText(text string) string {
-	// This function removes non-UTF-8 characters from the input text
-	cleanedText := make([]rune, 0, len(text))
-	for _, r := range text {
-		if r == 0xFFFD { // Replace invalid UTF-8 characters
-			continue
+func sanitizeString(sanitizer *bluemonday.Policy, buf *bytes.Buffer) (string, string) {
+	// get <title> tag html and sub string
+	// ex: ["<title> ..content.. </title>",  "..content..""]
+	titleMatched := titleRegex.FindStringSubmatch(buf.String())
+	var title string
+	// log.Printf("DEBUG text extractor title matched content: %v", titleMatched)
+	if len(titleMatched) == 2 {
+		title = sanitizer.Sanitize(titleMatched[1])
+		title = repeatedSpaceRegex.ReplaceAllString(title, " ")
+		ok := isValidUTF8([]byte(title))
+		// Title = html.UnescapeString(Title)
+		title = strings.TrimSpace(title)
+		if !ok {
+			title = ""
 		}
-		cleanedText = append(cleanedText, r)
 	}
-	return string(cleanedText)
+
+	textContent := sanitizer.SanitizeReader(buf).String()
+	textContent = repeatedSpaceRegex.ReplaceAllString(textContent, " ")
+	// TextContent = html.UnescapeString(TextContent)
+	textContent = strings.TrimSpace(textContent)
+	ok := isValidUTF8([]byte(textContent))
+	if !ok {
+		textContent = ""
+	}
+
+	return title, textContent
+}
+
+func isValidUTF8(input []byte) bool {
+	for len(input) > 0 {
+		r, size := utf8.DecodeRune(input)
+		if r == utf8.RuneError && size == 1 {
+			return false
+		}
+		input = input[size:]
+	}
+	return true
 }
