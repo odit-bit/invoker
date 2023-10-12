@@ -1,6 +1,10 @@
 ## Go sample application
 ### search engine that can input or search link and ranking the page in GO 
 
+
+
+In the nutshell user will submit link (url) from `frontend` and it will insert into db, and backend service will do pipeline process to crawl the link, extract the text and title content for indexing or rangking.Beside `frontend` there is 2 core package `crawler` and `calculator`.
+
 Project structure:
 ```
 root
@@ -13,7 +17,7 @@ root
 │       │   ├── pagerank
 │       │   └── supervisor.go
 │       └── main.go
-├── calculator  (core)
+├── pagerank  (core)
 │   └── ...
 ├── crawler     (core)
 │   └── ...
@@ -29,15 +33,12 @@ root
 │       └── postgredb
 ├── partition
 │   └── ...
-├── service
-│   ├── linkcrawler
-│   ├── pagerank
-│   └── supervisor.go
 ├── textIndex
 │   ├── index
 │   ├── store
-└── main.go
-...
+├── main.go
+│
+├── ...
 
 ```
 
@@ -45,24 +46,9 @@ root
 
 `frontend` is rest-api for communicated with backend , there is also pre-rendering html page (template) for every endpoint.
 
-beside `frontend` there is 2 core package `crawler`,`calculator`.
-in the nutshell user will submit link (url) from `frontend` and it will insert into db, and backend will do background process for submited link
-
-
-
-`internal` consisted of package that have non-application-specific implementation code like httpclient, pipeline, uuid etc.
+`internal` consisted of package that have non-application-specific implementation code like httpclient, uuid etc. so it can be reusable and changeable without to modified the core module or logic.
 
 <!-- `services` wire component (app-specific) like crawler and pagerank into link-database or index-database -->
 
+how to build to test , visit the app/... 
 
-using docker at remote host.
-in local terminal enter this
-```
- export DOCKER_HOST=ssh://username@remote-ip
-```
-all docker command will connect to remote host as long as terminal is not close.
-
-and run the container 
-```
-docker compose up
-```

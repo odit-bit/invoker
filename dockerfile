@@ -14,7 +14,7 @@ RUN go mod download
 # make static image
 ENV CGO_ENABLED=0
 ENV GOOS=linux
-RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o /monolith ./app/monolith/main.go 
+RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o /monolith ./app/monolith/
 
 
 ########################################################

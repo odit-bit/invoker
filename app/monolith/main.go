@@ -14,15 +14,14 @@ import (
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
-	"github.com/odit-bit/invoker/app/monolith/service"
-	"github.com/odit-bit/invoker/app/monolith/service/linkcrawler"
-	"github.com/odit-bit/invoker/app/monolith/service/pagerank"
 	"github.com/odit-bit/invoker/frontend"
 	"github.com/odit-bit/invoker/internal/privnet"
 	"github.com/odit-bit/invoker/internal/xhttpclient"
-	"github.com/odit-bit/invoker/linkgraph/store/postgredb"
+	"github.com/odit-bit/invoker/linkcrawler"
+	"github.com/odit-bit/invoker/pagerank"
 	"github.com/odit-bit/invoker/partition"
-	"github.com/odit-bit/invoker/textIndex/store/postgreindex"
+	"github.com/odit-bit/invoker/sql/postgredb"
+	"github.com/odit-bit/invoker/sql/postgreindex"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -78,7 +77,7 @@ func main() {
 
 	// crawler
 	flag.IntVar(&crawler_worker, "crawler-worker ", n2, "crawler link fetcher worker")
-	flag.DurationVar(&crawler_update_interval, "crawler-wake-interval", dur2, "determined wake crawler time in minute")
+	flag.DurationVar(&crawler_update_interval, "crawler-interval", dur2, "determined wake crawler time in minute")
 	flag.DurationVar(&crawler_reindex_interval, "crawler-reindex-treshold", 7*24*time.Hour, "determined time before link re-crawl again ")
 
 	// dsn
@@ -157,7 +156,7 @@ func main() {
 	//frontend instance
 	frontendService := frontend.NewDefault(graphDB, indexDB)
 
-	var spv service.Supervised
+	var spv Supervised
 
 	// run services
 	spv = append(spv, pagerankService)
