@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/odit-bit/invoker/internal/pipeline"
+	"github.com/odit-bit/invoker/linkcrawler/pipeline"
 )
 
 var _ pipeline.Payload = (*stubPayload)(nil)

@@ -1,4 +1,4 @@
-## Go sample application
+├## Go sample application
 ### search engine that can input or search link and ranking the page in GO 
 
 
@@ -12,30 +12,25 @@ root
 │   ├── microservice
 │   │   └── ...
 │   └── monolith
-│       ├── service
-│       │   ├── linkcrawler
-│       │   ├── pagerank
-│       │   └── supervisor.go
+│       ├── doc.go
+│       ├── supervisor.go
 │       └── main.go
-├── pagerank  (core)
-│   └── ...
-├── crawler     (core)
-│   └── ...
 ├── frontend
 │   └── ...
 ├── internal
 │   └── ...
-├── linkgraph
-│   ├── graph
-│   │    └── graph.go
-│   └── store
-│       ├── memory
-│       └── postgredb
+├── linkcrawler (core service)
+│   └── ...
+├── linkgraph (domain)
+│   └── ...
+├── pagerank  (core service)
+│   └── ...
 ├── partition
 │   └── ...
-├── textIndex
-│   ├── index
-│   ├── store
+|── store
+│   └── ...
+├── textIndex (domain)
+│   └── ...
 ├── main.go
 │
 ├── ...
@@ -48,7 +43,17 @@ root
 
 `internal` consisted of package that have non-application-specific implementation code like httpclient, uuid etc. so it can be reusable and changeable without to modified the core module or logic.
 
+`link crawler` service background that process the submitted
+
+`linkgraph` manage of link and edge
+
+`pagerank` calculate ranking for indexing
+
+`store` implementation of linkgraph
+
+`textIndex` manage indexed link 
+
 <!-- `services` wire component (app-specific) like crawler and pagerank into link-database or index-database -->
 
-how to build to test , visit the app/... 
+how to build for try , visit the app/... 
 

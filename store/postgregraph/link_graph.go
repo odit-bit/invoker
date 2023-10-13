@@ -1,4 +1,4 @@
-package postgredb
+package postgregraph
 
 import (
 	"context"
@@ -15,7 +15,7 @@ type postgre struct {
 	db *sqlx.DB
 }
 
-func Newdb(db *sqlx.DB) *postgre {
+func New(db *sqlx.DB) *postgre {
 	p := postgre{
 		db: db,
 	}

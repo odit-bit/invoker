@@ -17,8 +17,46 @@ import (
 	"github.com/odit-bit/invoker/textIndex/index"
 )
 
-//===========================================================service
+/*
+crawling logic
 
+1.iteration
+
+	iterate the linkIterator,
+	for every link the received send it to process
+
+2.pipeline processing
+
+	process link for sanitizing and discover the new link,
+	transform link into payload
+	add payload into source of pipeline and
+	get payload from destination of pipeline.
+
+3.persistence
+
+	sanitized link will have text and title
+	and it will be in payload field if text extraction process is success.
+
+		a. transform to document and save to persistence (repo, db)
+
+		b. at this point the link has sanitized, then upsert the link
+
+			in payload there payload.Links and payload.NoFollow field as result of discovery process (link extraction)
+				transform Links field into link struct
+				save every link
+
+				create edge:
+					set crawled linkID in edge.Src,
+					set founded link as edge.Dst,
+				save edge
+
+				transform NoFollow filed into link struct,
+					save link
+*/
+
+// ===========================================================service
+//
+//	graph representation of link
 type GraphAPI interface {
 	UpsertLink(link *graph.Link) error
 	// insert the new edge, the updated scenario will occure
@@ -177,6 +215,7 @@ func NewWithConfig(cfg *Config) (*Service, error) {
 	}, nil
 }
 
+// do background process of sanitizion, link extraction and text extraction
 func (s *Service) Run(ctx context.Context) error {
 	s.cfg.Logger.Println("crawler service start")
 	s.cfg.Logger.Printf("update interval: %v\n", s.cfg.UpdateInterval.String())

@@ -1,4 +1,5 @@
 * link submission:
+
     As an end user,
     I need to be able to submit new links to invoker,
     so as to update the link graph and make their contents searchable
@@ -15,6 +16,7 @@
         - already submitted link should receive by backend but not inserted twice.
 
 * Search:
+
     As an end user,
     I need to be able to submit FULL-TEXT SEARCH QUERY,
     so as to retreive a list of relevant matching result
@@ -35,6 +37,7 @@
 
 
 * crawl link graph:
+
     As the crawler backend system,
     I need to be able to obtain a list of sanitized links from the link graph,
     so as to fetch and index their contents while at the same time expanding
@@ -72,12 +75,12 @@
 
 Components:
 
-    crawler:
+    linkcrawler:
         -.crawl service that can crawl the link to find new following link        
     linkgraph:
-        -.persistence of links and egde 
+        -.manage links and egdes 
     textIndex:
-        -.persistence of index
+        -.indexing link as document for search 
     pagerank:
         -. calculate ranking of link for indexing
     frontend:

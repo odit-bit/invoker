@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/odit-bit/invoker/linkgraph/graph"
-	"github.com/odit-bit/invoker/linkgraph/store/memory"
+	"github.com/odit-bit/invoker/linkgraph/memory"
 )
 
 // // SuiteBase defines a re-usable set of graph-related tests that can

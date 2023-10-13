@@ -1,4 +1,4 @@
-package postgredb
+package postgregraph
 
 import (
 	"context"
@@ -59,7 +59,7 @@ var pg = func() *postgre {
 		log.Fatal(err)
 	}
 
-	pg := Newdb(conn)
+	pg := New(conn)
 	return pg
 }()
 

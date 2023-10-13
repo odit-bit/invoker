@@ -20,8 +20,8 @@ import (
 	"github.com/odit-bit/invoker/linkcrawler"
 	"github.com/odit-bit/invoker/pagerank"
 	"github.com/odit-bit/invoker/partition"
-	"github.com/odit-bit/invoker/sql/postgredb"
-	"github.com/odit-bit/invoker/sql/postgreindex"
+	"github.com/odit-bit/invoker/store/postgregraph"
+	"github.com/odit-bit/invoker/store/postgreindex"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -97,7 +97,7 @@ func main() {
 	}
 	defer dbConn.Close()
 
-	graphDB := postgredb.Newdb(dbConn)
+	graphDB := postgregraph.New(dbConn)
 
 	indexDB, err := postgreindex.New(dbConn)
 	if err != nil {

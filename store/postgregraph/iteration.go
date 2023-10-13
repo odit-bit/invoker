@@ -1,4 +1,4 @@
-package postgredb
+package postgregraph
 
 import (
 	"context"

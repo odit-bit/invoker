@@ -41,10 +41,6 @@ type Config struct {
 	// An API for detecting the partition assignments for this service.
 	PartitionDetector partition.Detector
 
-	// // A clock instance for generating time-related events. If not specified,
-	// // the default wall-clock will be used instead.
-	// Clock clock.Clock
-
 	// The number of workers to spin up for computing PageRank scores. If
 	// not specified, a default value of 1 will be used instead.
 	ComputeWorkers int
@@ -81,7 +77,7 @@ func (cfg *Config) validate() error {
 	return err
 }
 
-// Service implements the PageRank calculator component for the Links 'R' Us project.
+// Service implements the PageRank calculator component.
 type Service struct {
 	cfg        Config
 	calculator *calculator.Calculator

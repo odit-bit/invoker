@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/nsqio/go-nsq"
-	"github.com/odit-bit/invoker/internal/bspgraph/message"
+	"github.com/odit-bit/invoker/pagerank/bspgraph/message"
 )
 
 var _ message.Queue = (*msgQueue)(nil)
