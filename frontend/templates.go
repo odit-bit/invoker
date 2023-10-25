@@ -14,7 +14,7 @@ var (
       .r{color:red;}
       .g{color:green;}
       .b{color:blue;}
-      .o{color:orange;}
+      .o{color:white;}
       .tc{margin-top:20px;text-align:center;}
       .t{border:1px solid lightgray;border-radius:24px;padding:10px;width:40%;}
       .sb{padding:10px;margin-top:20px;}
@@ -47,7 +47,7 @@ var (
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Links 'R' Us | {{.messageTitle}} </title>
+    <title>'bukan' Gatotkaca | {{.messageTitle}} </title>
     <style>
       .is{display:inline;}
       .l{font-size:2em;font-weight:bold;text-shadow: 1px 1px 1px rgba(0,0,0,0.4);}
@@ -55,7 +55,7 @@ var (
       .r{color:red;}
       .g{color:green;}
       .b{color:blue;}
-      .o{color:orange;}
+      .o{color:white;}
       .tc{margin-top:20px;text-align:center;}
       .t{border:1px solid lightgray;border-radius:24px;padding:10px;width:40%;}
       .sb{padding:10px;margin-top:20px;}
@@ -103,7 +103,7 @@ var (
       .r{color:red;}
       .g{color:green;}
       .b{color:blue;}
-      .o{color:orange;}
+      .o{color:white;}
       .tc{margin-top:20px;text-align:center;}
       .t{border:1px solid lightgray;border-radius:24px;padding:10px;width:40%;}
       .sb{padding:10px;margin-top:20px;}
@@ -174,7 +174,7 @@ var (
       .r{color:red;}
       .g{color:green;}
       .b{color:blue;}
-      .o{color:orange;}
+      .o{color:white;}
       .tc{margin-top:20px;text-align:center;}
       tc fieldset{padding:10px 30px;}
       .sb{padding:5px 10px;margin-top:20px;}            
@@ -196,7 +196,7 @@ var (
     <section class="tc">
       <form action="{{.submitLinkEndpoint}}" method="POST">
         <fieldset>
-        <legend>Submit a web site to submit</legend>
+        <legend>submit a web site</legend>
         <input class="t" type="text" required="true" name="link" placeholder="https://"/>
 				<br/>
         <input class="sb" type="submit" value="Submit"/>

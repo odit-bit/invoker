@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"github.com/odit-bit/invoker/linkcrawler/pipeline"
+	"github.com/odit-bit/pipeline"
 )
 
 type URLGetter interface {
@@ -47,7 +46,7 @@ func (lf *linkFetcher) Process(ctx context.Context, p pipeline.Payload) (pipelin
 	pURL := payload.URL
 	// Skip URLs that point to files that cannot contain html content.
 	if exclusionRegex.MatchString(pURL) {
-		log.Printf("link fetcher url: %v\nerror: %v \n", pURL, "not containt html content")
+		// log.Printf("link fetcher url: %v\nerror: %v \n", pURL, "not containt html content")
 		return nil, nil
 	}
 
@@ -55,13 +54,13 @@ func (lf *linkFetcher) Process(ctx context.Context, p pipeline.Payload) (pipelin
 	// This is a security risk!
 	private, err := lf.isPrivate(pURL)
 	if private || err != nil {
-		log.Printf("link fetcher error: %v url: %v\n", err, pURL)
+		// log.Printf("link fetcher error: %v url: %v\n", err, pURL)
 		return nil, nil
 	}
 
 	//get url within timeout otherwise skipped
 	if err := contentFromURL(ctx, lf.urlGetter, payload); err != nil {
-		log.Printf("link fetcher error: %v url: %v\n", err, pURL)
+		// log.Printf("link fetcher error: %v url: %v\n", err, pURL)
 		return nil, nil
 	}
 

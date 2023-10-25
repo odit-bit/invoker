@@ -9,8 +9,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/odit-bit/invoker/linkcrawler/pipeline"
+	// "github.com/odit-bit/invoker/linkcrawler/pipeline"
 	"github.com/odit-bit/invoker/linkgraph/graph"
+	"github.com/odit-bit/pipeline"
 )
 
 var _ pipeline.Payload = (*payload)(nil)
@@ -50,7 +51,7 @@ func (ls *LinkSource) Payload() pipeline.Payload {
 	return p
 }
 
-var _ pipeline.Sink = (*countingSink)(nil)
+var _ pipeline.Destination = (*countingSink)(nil)
 
 type countingSink struct {
 	count int
@@ -100,7 +101,7 @@ func (c *Config) validate() error {
 }
 
 type Crawler struct {
-	pipe *pipeline.Pipeline
+	pipe *pipeline.Pipe
 }
 
 // Crawler implements a web-page crawling pipeline consisting of the following
@@ -118,19 +119,30 @@ func New(cfg *Config) (*Crawler, error) {
 	}
 
 	//stage 1
-	stg1 := pipeline.WorkerPool(
+	// stg1 := pipeline.WorkerPool(
+	// 	newLinkFetcher(cfg.URLGetter, cfg.NetDetector),
+	// 	cfg.FetchWorker,
+	// )
+
+	// stg2 := pipeline.FIFO(newLinkExtractor(cfg.NetDetector))
+	// stg3 := pipeline.FIFO(newTextExtractor())
+	// stg4 := pipeline.Broadcast(
+	// 	newUpdater(cfg.GraphUpdater),
+	// 	newTextIndexer(cfg.Indexer),
+	// )
+
+	stg1 := pipeline.NewMuxStage(cfg.FetchWorker,
 		newLinkFetcher(cfg.URLGetter, cfg.NetDetector),
-		cfg.FetchWorker,
 	)
 
-	stg2 := pipeline.FIFO(newLinkExtractor(cfg.NetDetector))
-	stg3 := pipeline.FIFO(newTextExtractor())
-	stg4 := pipeline.Broadcast(
+	stg2 := pipeline.NewFifo(newLinkExtractor(cfg.NetDetector))
+	stg3 := pipeline.NewFifo(newTextExtractor())
+	stg4 := pipeline.NewBroadcast(
 		newUpdater(cfg.GraphUpdater),
 		newTextIndexer(cfg.Indexer),
 	)
 
-	pipe := *pipeline.New(
+	pipe := *pipeline.NewPipe(&pipeline.Config{},
 		stg1,
 		stg2,
 		stg3,
@@ -148,6 +160,6 @@ func (c *Crawler) Crawl(ctx context.Context, linkIterator graph.LinkIterator) (i
 	}
 
 	dst := new(countingSink)
-	err := c.pipe.Process(ctx, &src, dst)
+	err := c.pipe.Run(ctx, &src, dst)
 	return dst.getCount(), err
 }

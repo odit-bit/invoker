@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/odit-bit/invoker/linkcrawler/pipeline"
+	"github.com/odit-bit/pipeline"
 )
 
 // payload implemet pipeline.Payload

@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/odit-bit/invoker/linkcrawler/pipeline"
 	"github.com/odit-bit/invoker/textIndex/index"
+	"github.com/odit-bit/pipeline"
 )
 
 var _ pipeline.Processor = (*textIndexer)(nil)
@@ -32,11 +32,9 @@ func (ti *textIndexer) Process(ctx context.Context, p pipeline.Payload) (pipelin
 	if !ok {
 		return nil, fmt.Errorf("graph updater not craweler's payload: %t ", p)
 	}
-	if len(payload.Title) == 0 {
-		log.Println("title is nil, it will error on postgreindex, url:", payload.URL)
-	}
+
 	if len(payload.TextContent) == 0 {
-		log.Println("text content is nil, it will error on postgreindex, url:", payload.URL)
+		log.Println("[DEBUG][text indexer] text content is nil, it will error on postgreindex, url:", payload.URL)
 	}
 
 	doc := index.Document{

@@ -10,7 +10,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/odit-bit/invoker/linkcrawler/pipeline"
+	"github.com/odit-bit/pipeline"
 )
 
 var (
@@ -47,11 +47,6 @@ func (te *textExtractor) Process(ctx context.Context, p pipeline.Payload) (pipel
 	}
 	sanitizer := te.policyPool.Get().(*bluemonday.Policy)
 	defer te.policyPool.Put(sanitizer)
-	// sanitizer.AllowElements("title")
-	// sanitizer.AllowElements("body")
-
-	// title, body := sanitizeString(sanitizer, &payload.RawContent)
-	// payload.Title, payload.TextContent = title, body
 
 	title, body := sanitizeBytes(sanitizer, &payload.RawContent)
 	payload.Title, payload.TextContent = title, body
@@ -69,13 +64,13 @@ func sanitizeString(sanitizer *bluemonday.Policy, buf *bytes.Buffer) (string, st
 	// get <title> tag html and sub string
 	// ex: ["<title> ..content.. </title>",  "..content..""]
 	titleMatched := titleRegex.FindStringSubmatch(buf.String())
+
 	var title string
 	// log.Printf("DEBUG text extractor title matched content: %v", titleMatched)
 	if len(titleMatched) == 2 {
 		title = sanitizer.Sanitize(titleMatched[1])
 		title = repeatedSpaceRegex.ReplaceAllString(title, " ")
 		ok := isValidUTF8([]byte(title))
-		// Title = html.UnescapeString(Title)
 		title = strings.TrimSpace(title)
 		if !ok {
 			title = ""
@@ -84,7 +79,6 @@ func sanitizeString(sanitizer *bluemonday.Policy, buf *bytes.Buffer) (string, st
 
 	textContent := sanitizer.SanitizeReader(buf).String()
 	textContent = repeatedSpaceRegex.ReplaceAllString(textContent, " ")
-	// TextContent = html.UnescapeString(TextContent)
 	textContent = strings.TrimSpace(textContent)
 	ok := isValidUTF8([]byte(textContent))
 	if !ok {
@@ -111,7 +105,6 @@ func sanitizeBytes(sanitizer *bluemonday.Policy, buf *bytes.Buffer) (title, body
 	}
 
 	body = sanitizer.SanitizeReader(buf).Bytes()
-	// body = sanitizer.SanitizeBytes(htmlBytes)
 	body = repeatedSpaceRegex.ReplaceAll(body, repeatSpaceBytes)
 	body = bytes.TrimSpace(body)
 	ok := isValidUTF8(body)

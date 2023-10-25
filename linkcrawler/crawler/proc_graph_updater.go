@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/odit-bit/invoker/linkcrawler/pipeline"
 	"github.com/odit-bit/invoker/linkgraph/graph"
+	"github.com/odit-bit/pipeline"
 )
 
 var _ pipeline.Processor = (*updater)(nil)
@@ -41,13 +41,14 @@ func (u *updater) Process(ctx context.Context, p pipeline.Payload) (pipeline.Pay
 	}
 
 	// insert nofollow link, without create an edge
-	for _, dstLink := range payload.NoFollowLinks {
-		l := graph.Link{URL: dstLink}
-		err := u.graphUpdater.UpsertLink(&l)
-		if err != nil {
-			return nil, err
-		}
-	}
+	// TODO: deprecating insert nofollowlinks
+	// for _, dstLink := range payload.NoFollowLinks {
+	// 	l := graph.Link{URL: dstLink}
+	// 	err := u.graphUpdater.UpsertLink(&l)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// }
 
 	//
 

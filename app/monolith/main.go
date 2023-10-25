@@ -58,7 +58,7 @@ func main() {
 
 	dur1, err := time.ParseDuration(os.Getenv("PAGERANK_UPDATE_TIME"))
 	if err != nil {
-		dur1 = 30 * time.Minute
+		dur1 = 60 * time.Minute
 	}
 
 	dur2, err := time.ParseDuration(os.Getenv("CRAWLER_WAKE_INTERVAL"))

@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/odit-bit/invoker/linkcrawler/pipeline"
+	"github.com/odit-bit/pipeline"
 )
 
 var _ pipeline.Processor = (*linkExtractor)(nil)
