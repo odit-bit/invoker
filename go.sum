@@ -94,6 +94,8 @@ github.com/odit-bit/pipeline v0.0.0-20231023160120-a5ef60330b04 h1:N279MmNRcG3Qp
 github.com/odit-bit/pipeline v0.0.0-20231023160120-a5ef60330b04/go.mod h1:pvA57INXXaO6Twx9afOXVaVtcBOIOjRJmLxN/u2NJn0=
 github.com/odit-bit/pipeline v0.0.0-20231023164645-15e53ce578f2 h1:0ix/vO3rQGs4uhCokxDyDSgrg/CTtoqSLMNgKsiCn7E=
 github.com/odit-bit/pipeline v0.0.0-20231023164645-15e53ce578f2/go.mod h1:pvA57INXXaO6Twx9afOXVaVtcBOIOjRJmLxN/u2NJn0=
+github.com/odit-bit/pipeline v0.0.0-20231025195452-f57e15508349 h1:3NCq/C4rcYSpxtma71ZSAJeW+DUyfY5eDZVr0DN/wp0=
+github.com/odit-bit/pipeline v0.0.0-20231025195452-f57e15508349/go.mod h1:mhM8ND+wyoijqXDJNWdOAxI+wbf7E3EZnb7YNaBeSVM=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_golang v1.17.0 h1:rl2sfwZMtSthVU752MqfjQozy7blglC+1SOtjMAMh+Q=

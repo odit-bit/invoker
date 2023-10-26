@@ -118,23 +118,7 @@ func New(cfg *Config) (*Crawler, error) {
 		return nil, err
 	}
 
-	//stage 1
-	// stg1 := pipeline.WorkerPool(
-	// 	newLinkFetcher(cfg.URLGetter, cfg.NetDetector),
-	// 	cfg.FetchWorker,
-	// )
-
-	// stg2 := pipeline.FIFO(newLinkExtractor(cfg.NetDetector))
-	// stg3 := pipeline.FIFO(newTextExtractor())
-	// stg4 := pipeline.Broadcast(
-	// 	newUpdater(cfg.GraphUpdater),
-	// 	newTextIndexer(cfg.Indexer),
-	// )
-
-	stg1 := pipeline.NewMuxStage(cfg.FetchWorker,
-		newLinkFetcher(cfg.URLGetter, cfg.NetDetector),
-	)
-
+	stg1 := pipeline.NewMuxStage(cfg.FetchWorker, newLinkFetcher(cfg.URLGetter, cfg.NetDetector))
 	stg2 := pipeline.NewFifo(newLinkExtractor(cfg.NetDetector))
 	stg3 := pipeline.NewFifo(newTextExtractor())
 	stg4 := pipeline.NewBroadcast(

@@ -160,7 +160,7 @@ func (svc *Service) Run(ctx context.Context) error {
 			}
 
 			if curPartition != 0 {
-				svc.logger.Println("[INFO]service can only run on the leader of the application cluster")
+				svc.logger.Println("[INFO] service can only run on the leader of the application cluster")
 				return nil
 			}
 
@@ -173,7 +173,7 @@ func (svc *Service) Run(ctx context.Context) error {
 }
 
 func (svc *Service) updateGraphScores(ctx context.Context) error {
-	svc.logger.Println("[INFO]starting PageRank update pass",
+	svc.logger.Println("[INFO] starting PageRank update pass",
 		"vertice_count", len(svc.calculator.Graph().Vertices()))
 
 	startAt := time.Now()

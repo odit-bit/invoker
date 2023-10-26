@@ -10,7 +10,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/microcosm-cc/bluemonday v1.0.26
 	github.com/nsqio/go-nsq v1.1.0
-	github.com/odit-bit/pipeline v0.0.0-20231023164645-15e53ce578f2
+	github.com/odit-bit/pipeline v0.0.0-20231025195452-f57e15508349
 	github.com/prometheus/client_golang v1.17.0
 	go.uber.org/mock v0.3.0
 	go.uber.org/multierr v1.11.0
